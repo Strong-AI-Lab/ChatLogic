@@ -1,11 +1,15 @@
 import openai
 import os
+import templates
 
-
-def ai_function(function, args, description, model = "gpt-3.5-turbo"):
+# agent_engineer: prompting fot system content
+# proposition: prompting for converting all propositions to pyswip code
+def ai_function_generation(demo, context, question, requirements, model = "gpt-3.5-turbo"):
     # parse args to comma separated string
-    args = ", ".join(args)
-    messages = [{"role": "system", "content": f"You are now the following python function: ```# {description}\n{function}```\n\nOnly respond with your `return` value. Do not include any other explanatory text in your response."},{"role": "user", "content": args}]
+    messages = [{"role": "system",
+                "content": demo},
+                {"role": "user",
+                "content": f"Propositions: ```{context}```\nQuestion: ```{question}```, ```{requirements}```"}]
 
     response = openai.ChatCompletion.create(
         model = model,
