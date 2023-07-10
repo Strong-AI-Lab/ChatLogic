@@ -1,7 +1,28 @@
 from datasets import load_dataset
+import json
 
 # import the dataset PARARULE_plus from huggingface
 PARARULE_Plus_dataset = load_dataset("qbao775/PARARULE-Plus")
+
+Data_QCat0 = []
+
+for i in PARARULE_Plus_dataset['train']:
+    if i['meta']['QCat'] == '0' and i['meta']['QDep'] == '5':
+        Data_QCat0.append(i)
+for i in PARARULE_Plus_dataset['test']:
+    if i['meta']['QCat'] == '0' and i['meta']['QDep'] == '5':
+        Data_QCat0.append(i)
+for i in PARARULE_Plus_dataset['validation']:
+    if i['meta']['QCat'] == '0' and i['meta']['QDep'] == '5':
+        Data_QCat0.append(i)
+
+# Create a dataset to store QCat == 0
+filename = 'PARARULE_plus_QCat0.json'
+with open(filename, 'w') as file:
+    json.dump(Data_QCat0, file)
+# PARARULE_Plus_dataset = [item for item in PARARULE_Plus_dataset if item['train']['meta']['QCat'] == '0']
+# for i in range(3):
+#     print(PARARULE_Plus_dataset[i])
 # print(PARARULE_Plus_dataset['train'][200]['label'])
 # with the following index PARARULE_Plus_dataset['train'][0/1/2/3...]
 # {'id': 'NegationRule-Animal-D2-3082',
