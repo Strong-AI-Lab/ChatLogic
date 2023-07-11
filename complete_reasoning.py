@@ -11,13 +11,32 @@ openai.api_key = openai_API_keys.OPENAI_API_KEY
 JSON_filename = 'PARARULE_plus_QCat0.json'
 PY_filename = 'pyDatalog_processing.py'
 
+def extract_string(input_string):
+    left_boundary = 'import'
+    right_boundary = ')'
+
+    start_index = input_string.find(left_boundary)
+    end_index = input_string.rfind(right_boundary, start_index)
+
+    if start_index != -1 and end_index != -1:
+        extracted_string = input_string[start_index:end_index + 1]
+        return extracted_string.strip()
+
+    return None
+
+
 # Complete Communication with ChatGPT
-def Communication(demo, context, question, requirements, model):
+def Generation(demo, context, question, requirements, model):
 
     result_string = call_openai_API.ai_function_generation(demo, context, question, requirements, model)
     return result_string
 
 # Communication(templates.templates["agent_engineer"], PARARULE_Plus.PARARULE_Plus_dataset['train'][200]['context'], PARARULE_Plus.PARARULE_Plus_dataset['train'][200]['question'], templates.templates["no_extra_content"], "gpt-3.5-turbo")
+
+def Adjustment(demo, code, error_message, model):
+
+    result_string = call_openai_API.ai_generation_adjustment(demo, code, error_message, model)
+    return result_string
 
 
 with open(JSON_filename, 'r') as file:
@@ -25,23 +44,32 @@ with open(JSON_filename, 'r') as file:
 
 correct_num = 0
 for i in range(10):
-    try:
-        result_string = Communication(templates.templates["agent_engineer"], data[i]['context'],
-                        data[i]['question'],
-                        templates.templates["no_extra_content"], "gpt-3.5-turbo")
-        print(result_string)
+    result_string = extract_string(Generation(templates.templates["agent_engineer"], data[i]['context'],
+                    data[i]['question'],
+                    templates.templates["no_extra_content"], "gpt-3.5-turbo"))
+    print(result_string)
+    with open(PY_filename, 'w') as file:
+        file.write("{}".format(result_string))
+    print("processing...")
+    output = subprocess.check_output(['python', PY_filename], universal_newlines=True)
+    flag = 0
+    while(output.strip() != '1' and output.strip() != '0'):
+        adjustment_string = extract_string(Adjustment(templates.templates["adjustment_agent"],
+                                                      result_string, output, "gpt-3.5-turbo"))
         with open(PY_filename, 'w') as file:
-            file.write("{}".format(result_string))
-        print("processing...")
-        try:
-            output = subprocess.check_output(['python', PY_filename], universal_newlines=True)
-            if int(output.strip()) == data[i]['label']:
-                correct_num += 1
-            else:
-                continue
-            print(correct_num)
-        except subprocess.TimeoutExpired:
-            continue
-    except Exception as e:
+            file.write("{}".format(adjustment_string))
+        print("reprocessing...")
+        output = subprocess.check_output(['python', PY_filename], universal_newlines=True)
+        print("New output:" + output)
+        print(type(output))
+        flag+=1
+        if(flag == 5):
+            break
+    if (output.strip() != '1' and output.strip() != '0'):
         continue
-print(correct_num/20)
+    if int(output.strip()) == data[i]['label']:
+        correct_num += 1
+    else:
+        continue
+    print(correct_num)
+print(correct_num/10)
