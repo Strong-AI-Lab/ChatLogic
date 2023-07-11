@@ -43,33 +43,36 @@ with open(JSON_filename, 'r') as file:
     data = json.load(file)
 
 correct_num = 0
-for i in range(10):
-    result_string = extract_string(Generation(templates.templates["agent_engineer"], data[i]['context'],
-                    data[i]['question'],
-                    templates.templates["no_extra_content"], "gpt-3.5-turbo"))
-    print(result_string)
-    with open(PY_filename, 'w') as file:
-        file.write("{}".format(result_string))
-    print("processing...")
-    output = subprocess.check_output(['python', PY_filename], universal_newlines=True)
-    flag = 0
-    while(output.strip() != '1' and output.strip() != '0'):
-        adjustment_string = extract_string(Adjustment(templates.templates["adjustment_agent"],
-                                                      result_string, output, "gpt-3.5-turbo"))
+for i in range(20):
+    try:
+        result_string = extract_string(Generation(templates.templates["agent_engineer"], data[i]['context'],
+                        data[i]['question'],
+                        templates.templates["no_extra_content"], "gpt-3.5-turbo"))
+        print(result_string)
         with open(PY_filename, 'w') as file:
-            file.write("{}".format(adjustment_string))
-        print("reprocessing...")
+            file.write("{}".format(result_string))
+        print("processing...")
         output = subprocess.check_output(['python', PY_filename], universal_newlines=True)
-        print("New output:" + output)
-        print(type(output))
-        flag+=1
-        if(flag == 5):
-            break
-    if (output.strip() != '1' and output.strip() != '0'):
+        flag = 0
+        while(output.strip() != '1' and output.strip() != '0'):
+            adjustment_string = extract_string(Adjustment(templates.templates["adjustment_agent"],
+                                                            result_string, output, "gpt-3.5-turbo"))
+            with open(PY_filename, 'w') as file:
+                file.write("{}".format(adjustment_string))
+            print("reprocessing...")
+            output = subprocess.check_output(['python', PY_filename], universal_newlines=True)
+            print("New output:" + output)
+            print(type(output))
+            flag+=1
+            if(flag == 3):
+                break
+        if (output.strip() != '1' and output.strip() != '0'):
+            continue
+        if int(output.strip()) == data[i]['label']:
+            correct_num += 1
+        else:
+            continue
+        print(correct_num)
+    except Exception as e:
         continue
-    if int(output.strip()) == data[i]['label']:
-        correct_num += 1
-    else:
-        continue
-    print(correct_num)
-print(correct_num/10)
+print(correct_num/20)
