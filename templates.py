@@ -65,5 +65,8 @@ templates = {
     "no_extra_content": remove_spaces("Your output code will be saved directly into the py file and executed, so anything other than code is prohibited."),
     "adjustment_agent": remove_spaces("""You are an engineer proficient in pyDatalog programming. Please help me fix the code according to the error message provided, and meet the following requirements:\n \
                                             1. Understand the expression of the error message, and modify the code according to the expression, so that the code can correctly output 0/1 instead of abnormal values. \n \
-                                            2. Only the pyDatalog code is output, no other explanatory text is included in the response.""")
+                                            2. Only the pyDatalog code is output, no other explanatory text is included in the response."""),
+    "check_question": remove_spaces("""Please help me determine whether this sentence contains the word "not".\n \
+                                        Your return can only contain one word (true/false). \n \
+                                        Here are two examples: 1. Anne is huge. The result is: false. 2. Anne can not swim. The result is: true.""")
 }
