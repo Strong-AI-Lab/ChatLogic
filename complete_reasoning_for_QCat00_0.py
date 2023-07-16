@@ -4,12 +4,14 @@ import templates
 import openai
 import openai_API_keys
 import subprocess
+import csv
 
 # Initialize the OpenAI API client
 openai.api_key = openai_API_keys.OPENAI_API_KEY
 #Define the file name
-JSON_filename = 'PARARULE_plus_step5_QCat0.json'
+JSON_filename = 'PARARULE_plus_step2.json'
 PY_filename = 'pyDatalog_processing.py'
+record_filename = 'record.csv'
 
 def extract_string(input_string):
     left_boundary = 'import'
@@ -51,6 +53,28 @@ def Adjustment(demo, code, error_message, model):
     result_string = call_openai_API.ai_generation_adjustment(demo, code, error_message, model)
     return result_string
 
+def write_record(filename, id, value, code, step, flag):
+    with open(filename, 'r') as file:
+        reader = csv.reader(file)
+        rows = list(reader)
+
+    target_id = id
+    target_index = None
+
+    for i, row in enumerate(rows):
+        if row[0] == target_id:
+            target_index = i
+            break
+
+    if target_index is not None:
+        rows[target_index].insert(step, value)
+        rows[target_index].insert(4, flag)
+        rows[target_index].insert(5, code)
+
+    with open(filename, 'w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerows(rows)
+
 
 with open(JSON_filename, 'r') as file:
     data = json.load(file)
@@ -60,7 +84,7 @@ result_string = check_pos_neg(Judgement(templates.templates["check_question"],
 # print(data[1]['question'])
 
 correct_num = 0
-for i in range(20):
+for i in range(1):
     try:
         result_string = extract_string(Generation(templates.templates["agent_engineer"], data[i]['context'],
                         data[i]['question'],
@@ -72,10 +96,10 @@ for i in range(20):
         output = subprocess.check_output(['python', PY_filename], universal_newlines=True)
         flag = 0
         while(output.strip() != '1' and output.strip() != '0'):
-            adjustment_string = extract_string(Adjustment(templates.templates["adjustment_agent"],
+            result_string = extract_string(Adjustment(templates.templates["adjustment_agent"],
                                                             result_string, output, "gpt-3.5-turbo"))
             with open(PY_filename, 'w') as file:
-                file.write("{}".format(adjustment_string))
+                file.write("{}".format(result_string))
             print("reprocessing...")
             output = subprocess.check_output(['python', PY_filename], universal_newlines=True)
             print("New output:" + output)
@@ -84,12 +108,14 @@ for i in range(20):
             if(flag == 3):
                 break
         if (output.strip() != '1' and output.strip() != '0'):
+            write_record(record_filename, data[i]['id'], "None", result_string, 1, flag)
             continue
         if int(output.strip()) == data[i]['label']:
+            write_record(record_filename, data[i]['id'], "True", result_string, 1, flag)
             correct_num += 1
         else:
+            write_record(record_filename, data[i]['id'], "False", result_string, 1, flag)
             continue
         print(correct_num)
     except Exception as e:
         continue
-print(correct_num/20)
