@@ -3,33 +3,54 @@ import json
 
 # import the dataset PARARULE_plus from huggingface
 PARARULE_Plus_dataset = load_dataset("qbao775/PARARULE-Plus")
-
-Data_QCat0 = []
-Data_QCat0_0 = []
+Data_step2 = []
+Data_step3 = []
+Data_step4 = []
+Data_step5 = []
 for i in PARARULE_Plus_dataset['train']:
-    if i['meta']['QCat'] == '0' and i['meta']['QDep'] == '5':
-        Data_QCat0.append(i)
-    if i['meta']['QCat'] == '0_0' and i['meta']['QDep'] == '5':
-        Data_QCat0_0.append(i)
-for i in PARARULE_Plus_dataset['test']:
-    if i['meta']['QCat'] == '0' and i['meta']['QDep'] == '5':
-        Data_QCat0.append(i)
-    if i['meta']['QCat'] == '0_0' and i['meta']['QDep'] == '5':
-        Data_QCat0_0.append(i)
+    if i['meta']['QDep'] == '2':
+        Data_step2.append(i)
+    if i['meta']['QDep'] == '3':
+        Data_step3.append(i)
+    if i['meta']['QDep'] == '4':
+        Data_step4.append(i)
+    if i['meta']['QDep'] == '5':
+        Data_step5.append(i)
 for i in PARARULE_Plus_dataset['validation']:
-    if i['meta']['QCat'] == '0' and i['meta']['QDep'] == '5':
-        Data_QCat0.append(i)
-    if i['meta']['QCat'] == '0_0' and i['meta']['QDep'] == '5':
-        Data_QCat0_0.append(i)
+    if i['meta']['QDep'] == '2':
+        Data_step2.append(i)
+    if i['meta']['QDep'] == '3':
+        Data_step3.append(i)
+    if i['meta']['QDep'] == '4':
+        Data_step4.append(i)
+    if i['meta']['QDep'] == '5':
+        Data_step5.append(i)
+for i in PARARULE_Plus_dataset['test']:
+    if i['meta']['QDep'] == '2':
+        Data_step2.append(i)
+    if i['meta']['QDep'] == '3':
+        Data_step3.append(i)
+    if i['meta']['QDep'] == '4':
+        Data_step4.append(i)
+    if i['meta']['QDep'] == '5':
+        Data_step5.append(i)
 
 # Create a dataset to store QCat == 0
-filename = 'PARARULE_plus_QCat0.json'
+filename = 'PARARULE_plus_step2.json'
 with open(filename, 'w') as file:
-    json.dump(Data_QCat0, file)
+    json.dump(Data_step2, file)
 
-filename = 'PARARULE_plus_QCat0_0.json'
+filename = 'PARARULE_plus_step3.json'
 with open(filename, 'w') as file:
-    json.dump(Data_QCat0_0, file)
+    json.dump(Data_step3, file)
+
+filename = 'PARARULE_plus_step4.json'
+with open(filename, 'w') as file:
+    json.dump(Data_step4, file)
+
+filename = 'PARARULE_plus_step5.json'
+with open(filename, 'w') as file:
+    json.dump(Data_step5, file)
 # PARARULE_Plus_dataset = [item for item in PARARULE_Plus_dataset if item['train']['meta']['QCat'] == '0']
 # for i in range(3):
 #     print(PARARULE_Plus_dataset[i])
