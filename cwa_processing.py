@@ -1,4 +1,12 @@
-def extract_adjectives(input_string):
+import nltk
+from nltk.tokenize import word_tokenize, sent_tokenize
+from nltk.tag import pos_tag
+import re
+nltk.download('punkt')
+nltk.download('averaged_perceptron_tagger')
+
+
+def extract_adjectives_in_conditional_sentence(input_string):
     words = input_string.split()
     if "and" in words:
         words.remove("and")
@@ -17,7 +25,7 @@ def extract_words_from_sentences(sentences_str):
             if first_is_index != -1 and "then" in sentence:
                 first_word = sentence[first_is_index + 3:sentence.find("then")].strip()
                 if first_word:
-                    adjectives = extract_adjectives(first_word)
+                    adjectives = extract_adjectives_in_conditional_sentence(first_word)
                     first_is_list.extend(adjectives)
 
                 second_is_index = sentence[first_is_index+3:].find("are")
@@ -26,12 +34,24 @@ def extract_words_from_sentences(sentences_str):
                     if second_word:
                         second_is_list.append(second_word)
 
-        if "All" in sentence and "people are" in sentence:
+        elif "All" in sentence and "people are" in sentence:
             people_are_index = sentence.find("people are")
             if people_are_index != -1:
                 first_word = sentence[3:people_are_index].strip()
                 if first_word:
-                    adjectives = extract_adjectives(first_word)
+                    adjectives = extract_adjectives_in_conditional_sentence(first_word)
+                    first_is_list.extend(adjectives)
+
+                second_word = sentence[people_are_index + 10:].strip()
+                if second_word:
+                    second_is_list.append(second_word)
+
+        elif "people are" in sentence:
+            people_are_index = sentence.find("people are")
+            if people_are_index != -1:
+                first_word = sentence[:people_are_index].strip().lower()
+                if first_word:
+                    adjectives = extract_adjectives_in_conditional_sentence(first_word)
                     first_is_list.extend(adjectives)
 
                 second_word = sentence[people_are_index + 10:].strip()
@@ -60,10 +80,81 @@ def find_unique_elements(list1, list2):
 
     return unique_elements
 
+
+
+def extract_adjectives(words, target_name):
+    tagged_words = pos_tag(words)
+
+    adjectives = []
+    name_found = False
+    verb_found = False
+
+    for word, tag in tagged_words:
+        if tag == 'NNP' and word == target_name:
+            name_found = True
+        elif name_found and not verb_found and tag.startswith('VB'):
+            verb_found = True
+        elif verb_found and tag.startswith('JJ'):
+            adjectives.append(word)
+        else:
+            name_found = False
+            verb_found = False
+
+    return adjectives
+
+def extract_names(words):
+    tagged_words = pos_tag(words)
+
+    names = []
+    current_name = []
+
+    for word, tag in tagged_words:
+        if tag == 'NNP':
+            current_name.append(word)
+        elif current_name:
+            names.append(" ".join(current_name))
+            current_name = []
+
+    if current_name:
+        names.append(" ".join(current_name))
+
+    return names
+
+def is_subject_verb_adjective(sentence):
+    pattern = r"^(NNP\s)*(VBZ\s)"
+    tagged_sentence = " ".join(tag for word, tag in sentence)
+    return re.match(pattern, tagged_sentence)
+
+def extract_names_and_attributes(text):
+    sentences = sent_tokenize(text)
+    dic = {}
+    for sentence in sentences:
+        if is_subject_verb_adjective(pos_tag(word_tokenize(sentence))):
+            words = word_tokenize(sentence)
+            name = "".join(extract_names(words))
+            if name:
+                dic[name] = []
+                adjectives = extract_adjectives(words, name)
+                dic[name].extend(adjectives)
+    return dic
+
+def create_output_string(dct, word_list):
+    output_string = ""
+    for name, attributes in dct.items():
+        for word in word_list:
+            if word not in attributes:
+                output_string += f"{name} is not {word}. "
+    return output_string.strip()
+
+
 if __name__ == "__main__":
-    sentences_str = "Fiona is high. Fiona is huge. Erin is little. Erin is short. Harry is smart. Alan is dull. Alan is rough. If someone is not big then they are dull. If someone is not sad then they are clever. If someone is smart then they are kind. If someone is kind and not poor then they are quiet. If someone is dull and not big then they are bad. If someone is bad then they are small. All small people are tiny. If someone is little and short then they are poor. If someone is poor and not kind then they are rough. If someone is rough then they are energetic. If someone is energetic then they are young. If someone is clever then they are nice. If someone is nice then they are wealthy. All wealthy people are kind. If someone is quiet then they are old. All old people are experienced."
+    sentences_str = "Fiona is big. Fiona is huge. Charlie is thin. Charlie is small. Harry is wealthy. Gary is poor. Gary is dull. If someone is not high then they are poor. If someone is not rough then they are quiet. If someone is wealthy then they are nice. If someone is nice and not bad then they are kind. If someone is poor and not high then they are sad. If someone is thin and small then they are bad. If someone is bad and not nice then they are dull. All quiet people are smart. "
     first_list, second_list = extract_words_from_sentences(sentences_str)
     print("The first list：", first_list)
     print("The second list：", second_list)
 
     print(find_unique_elements(first_list, second_list))
+
+    print(extract_names_and_attributes(sentences_str))
+
+    print(create_output_string(extract_names_and_attributes(sentences_str), find_unique_elements(first_list, second_list)))
