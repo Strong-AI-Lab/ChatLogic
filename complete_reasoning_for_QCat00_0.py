@@ -13,6 +13,11 @@ JSON_filename = 'PARARULE_plus_step2.json'
 PY_filename = 'pyDatalog_processing.py'
 record_filename = 'record.csv'
 
+demo_str = """Erin is high. Erin is big. Erin is strong. Bob is little. Bob is thin. Dave is smart. Dave is wealthy. Dave is kind. Harry is sad. Harry is bad. Harry is poor. High people are smart. If someone is little and thin then they are small. If someone is sad and bad then they are dull. If someone is smart and wealthy then they are quiet. All small people are short. All smart people are wealthy. All quiet people are nice. All dull people are rough."""
+demo_question = """Bob is short."""
+
+
+
 def extract_string(input_string):
     left_boundary = 'import'
     right_boundary = ')'
@@ -86,8 +91,8 @@ result_string = check_pos_neg(Judgement(templates.templates["check_question"],
 correct_num = 0
 for i in range(1):
     try:
-        result_string = extract_string(Generation(templates.templates["agent_engineer"], data[i]['context'],
-                        data[i]['question'],
+        result_string = extract_string(Generation(templates.templates["agent_engineer"], demo_str,#data[i]['context'],
+                        demo_question, #data[i]['question'],
                         templates.templates["no_extra_content"], "gpt-3.5-turbo"))
         print(result_string)
         with open(PY_filename, 'w') as file:
