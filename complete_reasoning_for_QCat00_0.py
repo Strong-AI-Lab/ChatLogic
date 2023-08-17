@@ -9,13 +9,8 @@ import csv
 # Initialize the OpenAI API client
 openai.api_key = openai_API_keys.OPENAI_API_KEY
 #Define the file name
-JSON_filename = 'PARARULE_plus_step2.json'
+JSON_filename = 'PARARULE_plus_step2_People_sample.json'
 PY_filename = 'pyDatalog_processing.py'
-record_filename = 'record.csv'
-
-demo_str = """Erin is high. Erin is big. Erin is strong. Bob is little. Bob is thin. Dave is smart. Dave is wealthy. Dave is kind. Harry is sad. Harry is bad. Harry is poor. High people are smart. If someone is little and thin then they are small. If someone is sad and bad then they are dull. If someone is smart and wealthy then they are quiet. All small people are short. All smart people are wealthy. All quiet people are nice. All dull people are rough."""
-demo_question = """Bob is short."""
-
 
 
 def extract_string(input_string):
@@ -83,16 +78,12 @@ def write_record(filename, id, value, code, step, flag):
 
 with open(JSON_filename, 'r') as file:
     data = json.load(file)
-result_string = check_pos_neg(Judgement(templates.templates["check_question"],
-                        data[1]['question'], "gpt-3.5-turbo"))
-# print(result_string)
-# print(data[1]['question'])
 
 correct_num = 0
-for i in range(1):
+for i in range(0, 1):
     try:
-        result_string = extract_string(Generation(templates.templates["agent_engineer"], demo_str,#data[i]['context'],
-                        demo_question, #data[i]['question'],
+        result_string = extract_string(Generation(templates.templates["agent_engineer"], data[i]['context'],
+                        data[i]['question'],
                         templates.templates["no_extra_content"], "gpt-3.5-turbo"))
         print(result_string)
         with open(PY_filename, 'w') as file:
@@ -113,14 +104,11 @@ for i in range(1):
             if(flag == 3):
                 break
         if (output.strip() != '1' and output.strip() != '0'):
-            write_record(record_filename, data[i]['id'], "None", result_string, 1, flag)
             continue
         if int(output.strip()) == data[i]['label']:
-            write_record(record_filename, data[i]['id'], "True", result_string, 1, flag)
             correct_num += 1
         else:
-            write_record(record_filename, data[i]['id'], "False", result_string, 1, flag)
             continue
-        print(correct_num)
     except Exception as e:
         continue
+print(correct_num)

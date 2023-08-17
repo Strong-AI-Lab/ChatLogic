@@ -1,36 +1,30 @@
 import traceback
 from pyDatalog import pyDatalog
-
 try:
     # Declare the pyDatalog variables
-    pyDatalog.create_terms(
-        'X, Erin, Bob, Dave, Harry, high, big, strong, little, thin, smart, wealthy, kind, sad, bad, poor, small, short, quiet, nice, dull, rough')
-
+    pyDatalog.create_terms('X, strong, big, thin, short, smart, rough, bad, huge, poor, quiet, wealthy, dull, nice, sad, kind')
+    
     # Define the facts
-    +high('Erin')
-    +big('Erin')
-    +strong('Erin')
-    +little('Bob')
-    +thin('Bob')
-    +smart('Dave')
-    +wealthy('Dave')
-    +kind('Dave')
-    +sad('Harry')
-    +bad('Harry')
-    +poor('Harry')
-
+    +strong('Dave')
+    +big('Dave')
+    +thin('Charlie')
+    +short('Charlie')
+    +smart('Anne')
+    +rough('Alan')
+    +bad('Alan')
+    
     # Define the rules
-    smart(X) <= high(X)
-    small(X) <= little(X) & thin(X)
-    dull(X) <= sad(X) & bad(X)
-    quiet(X) <= smart(X) & wealthy(X)
+    rough(X) <= ~huge(X)
+    quiet(X) <= ~poor(X)
     wealthy(X) <= smart(X)
-    nice(X) <= quiet(X)
-    rough(X) <= dull(X)
-    short(X) <= small(X)  # Missing rule for 'All small people are short.'
-
+    nice(X) <= wealthy(X) & ~dull(X)
+    sad(X) <= rough(X) & ~huge(X)
+    dull(X) <= thin(X) & short(X)
+    bad(X) <= dull(X) & ~wealthy(X)
+    kind(X) <= quiet(X)
+    
     # Query the knowledge base
-    result = short('Bob')
+    result = ~kind('Alan')
     if result:
         print(1)
     else:

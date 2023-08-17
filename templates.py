@@ -122,5 +122,6 @@ templates = {
                                             2. Only the pyDatalog code is output, no other explanatory text is included in the response."""),
     "check_question": remove_spaces("""Please help me determine whether this sentence contains the word "not".\n \
                                         Your return can only contain one word (true/false). \n \
-                                        Here are two examples: 1. Anne is huge. The result is: false. 2. Anne can not swim. The result is: true.""")
+                                        Here are two examples: 1. Anne is huge. The result is: false. 2. Anne can not swim. The result is: true."""),
+
 }

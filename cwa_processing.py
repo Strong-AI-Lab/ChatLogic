@@ -148,7 +148,7 @@ def create_output_string(dct, word_list):
 
 
 if __name__ == "__main__":
-    sentences_str = "Fiona is big. Fiona is huge. Charlie is thin. Charlie is small. Harry is wealthy. Gary is poor. Gary is dull. If someone is not high then they are poor. If someone is not rough then they are quiet. If someone is wealthy then they are nice. If someone is nice and not bad then they are kind. If someone is poor and not high then they are sad. If someone is thin and small then they are bad. If someone is bad and not nice then they are dull. All quiet people are smart. "
+    sentences_str = "Dave is strong. Dave is big. Charlie is thin. Charlie is short. Anne is smart. Alan is rough. Alan is bad. If someone is not huge then they are rough. If someone is not poor then they are quiet. If someone is smart then they are wealthy. If someone is wealthy and not dull then they are nice. If someone is rough and not huge then they are sad. If someone is thin and short then they are dull. If someone is dull and not wealthy then they are bad. All quiet people are kind. "
     first_list, second_list = extract_words_from_sentences(sentences_str)
     print("The first list：", first_list)
     print("The second list：", second_list)
