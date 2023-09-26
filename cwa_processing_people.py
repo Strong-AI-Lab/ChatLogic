@@ -1,4 +1,6 @@
 import nltk
+nltk.download('punkt')
+nltk.download('averaged_perceptron_tagger')
 from nltk.tokenize import word_tokenize, sent_tokenize
 from nltk.tag import pos_tag
 import re
@@ -149,10 +151,22 @@ def create_output_string(dct, word_list):
 
 
 if __name__ == "__main__":
-    sentences_str = "Dave is strong. Dave is big. Charlie is thin. Charlie is short. Anne is smart. Alan is rough. Alan is bad. If someone is not huge then they are rough. If someone is not poor then they are quiet. If someone is smart then they are wealthy. If someone is wealthy and not dull then they are nice. If someone is rough and not huge then they are sad. If someone is thin and short then they are dull. If someone is dull and not wealthy then they are bad. All quiet people are kind. "
+    sentences_str = "Anne is huge. Anne is big. Anne is high. Harry is little. Harry is short. Alan is nice. Alan is quiet. Alan is kind. Erin is rough. Erin is poor. Erin is sad. Huge people are nice. If someone is little and short then they are small. If someone is rough and poor then they are dull. If someone is nice and quiet then they are wealthy. All small people are thin. All nice people are quiet. All wealthy people are smart. All dull people are bad."
     first_list, second_list = extract_words_from_sentences(sentences_str)
-    # print("The first list：", first_list)
-    # print("The second list：", second_list)
+    print("The first list：", first_list)
+    print("The second list：", second_list)
+    print(extract_names_and_attributes(sentences_str))
+    print(find_unique_elements(first_list, second_list))
 
+    sentences = ""
+
+    for name in extract_names_and_attributes(sentences_str).keys():
+        # for each words in the list
+        for word in find_unique_elements(first_list, second_list):
+            # Generate a sentence if the word is not in the value of the current key of the dictionary
+            if word not in extract_names_and_attributes(sentences_str)[name]:
+                sentences = sentences + (f" {name} is not {word}.")
+
+    print(sentences)
     # call this py file to return a string base on cwa (People)
     # print(create_output_string(extract_names_and_attributes(sentences_str), find_unique_elements(first_list, second_list)))
