@@ -47,12 +47,14 @@ def sentence_processing(text):
         # 对于 "If something is 属性1 then it is 属性2" 句型
         elif "If" in sentence and "then" in sentence and " is not " not in sentence and " and not " not in sentence and " and " not in sentence:
             parts = sentence.split(" then ")
-            condition = parts[0].replace("If ", "").split(" is ")[1].strip()  # 获取属性1
-            consequence = parts[1].replace("it is ", "").replace(".", "").strip()  # 获取属性2
+            condition_parts = parts[0].replace("If ", "").split(" is ")
+            if len(condition_parts) == 2:
+                condition = condition_parts[1].strip()  # 获取属性1
+                consequence = parts[1].replace("it is ", "").replace(".", "").strip()  # 获取属性2
 
-            # 将属性添加到对应的列表中
-            rules_condition.append(condition)
-            rules_consequence.append(consequence)
+                # 将属性添加到对应的列表中
+                rules_condition.append(condition)
+                rules_consequence.append(consequence)
 
         # 对于 "If something is not 属性1 then it is 属性2" 句型
         elif "If" in sentence and "then" in sentence and " is not " in sentence and " and not " not in sentence and " and " not in sentence:
@@ -100,12 +102,8 @@ def find_unique_elements(list1, list2):
 
     return unique_elements
 
-
-if __name__ == "__main__":
-    sentences_str = "the cat is furry. the dog is kind. the cat likes the dog. If something is lovely then it is kind. If something is not small then it is strong. If something is kind and not quiet then it is round. If something is cute and lovely then it is beautiful. All awful animals are heavy."
-    facts, rules_condition, rules_consequence = sentence_processing(sentences_str)
-    print("The first list：", rules_condition)
-    print("The second list：", rules_consequence)
+def preprocessing(text):
+    facts, rules_condition, rules_consequence = sentence_processing(text)
 
     sentences = ""
 
@@ -114,6 +112,31 @@ if __name__ == "__main__":
         for word in find_unique_elements(rules_condition, rules_consequence):
             # Generate a sentence if the word is not in the value of the current key of the dictionary
             if word not in facts[name]:
-                sentences = sentences + (f" {name} is not {word}.")
+                sentences = sentences + (f"{name} is not {word}.")
+    return sentences + " " + text
 
-    print(sentences)
+
+
+if __name__ == "__main__":
+    json_files = [
+        "PARARULE_plus_step2_Animal_sample.json",
+        "PARARULE_plus_step3_Animal_sample.json",
+        "PARARULE_plus_step4_Animal_sample.json",
+        "PARARULE_plus_step5_Animal_sample.json",
+        ]
+
+    # Iterate over each JSON file
+    for file_name in json_files:
+        # Load the JSON data from file
+        with open(file_name, 'r') as file:
+            data = json.load(file)
+
+        # Extract context from each data entry, preprocess, and update the data
+        for entry in data:
+            original_context = entry['context']
+            preprocessed_context = preprocessing(original_context)
+            entry['context'] = f"{preprocessed_context}"
+
+        # Write the updated data back to the JSON file
+        with open(file_name, 'w') as file:
+            json.dump(data, file, indent=4)
