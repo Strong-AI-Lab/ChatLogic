@@ -15,8 +15,8 @@ def remove_spaces(text):
     return text
 
 template = {
-    "Llama2_baseline": remove_spaces("""Based on the closed world assumption, please help me complete a multi-step logical reasoning task. Please help me answer whether the question is correct or not based on the facts and rules formed by these natural language propositions. 、
-                                            You should just return me one number as the final answer  (1 for true and 0 for wrong) and without providing any reasoning process. The Propositions and Questions are as follows: \n""")
+    "Llama2_baseline": remove_spaces("""Based on the closed world assumption, please help me complete a multi-step logical reasoning task (judge true or not). Please help me answer whether the question is correct or not based on the facts and rules formed by these natural language propositions. 、
+                                            You should just return me one number as the final answer  (1 for true and 0 for wrong) and providing reasoning process simply. The Propositions and Questions are as follows: \n""")
 }
 
 tokenizer = AutoTokenizer.from_pretrained(model)
