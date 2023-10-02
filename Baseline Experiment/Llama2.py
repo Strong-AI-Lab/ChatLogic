@@ -53,7 +53,7 @@ json_files = [
 ]
 
 # Open the CSV file for writing
-with open("ChatGPT.csv", "w", newline="", encoding="utf-8") as csv_file:
+with open("Llama2-7B.csv", "w", newline="", encoding="utf-8") as csv_file:
     csv_writer = csv.writer(csv_file)
     csv_writer.writerow(["step", "return", "label"])  # Write header
 
