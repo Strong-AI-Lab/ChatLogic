@@ -16,7 +16,7 @@ for input_file, output_file in zip(input_files, output_files):
     with open(input_file, "r") as json_file:
         json_data_list = json.load(json_file)
 
-    random_sample = random.sample(json_data_list, 20)
+    random_sample = random.sample(json_data_list, 40)
 
     with open(output_file, "w") as output_file:
         json.dump(random_sample, output_file)

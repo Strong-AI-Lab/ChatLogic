@@ -2,12 +2,12 @@ import json
 import call_openai_API
 import templates
 import openai
-import openai_API_keys
 import subprocess
 import csv
+import os
 
 # Initialize the OpenAI API client
-openai.api_key = openai_API_keys.OPENAI_API_KEY
+openai.api_key = api_key = os.getenv("OPENAI_API_KEY")
 #Define the file name
 JSON_filename = 'PARARULE_plus_step2_People_sample.json'
 PY_filename = 'pyDatalog_processing.py'
@@ -36,19 +36,19 @@ def check_pos_neg(string):
     return None
 
 def Judgement(demo, question, model):
-    result_string = call_openai_API.ai_generation_check(demo, question, model)
+    result_string = call_openai_API.ai_generation_check(demo, question, model = "gpt-3.5-turbo")
     return result_string
 
 
 # Complete Communication with ChatGPT
-def Generation(demo, context, question, requirements, model):
+def Generation(demo, context, question, requirements, model = "gpt-3.5-turbo"):
 
     result_string = call_openai_API.ai_function_generation(demo, context, question, requirements, model)
     return result_string
 
 # Communication(templates.templates["agent_engineer"], PARARULE_Plus.PARARULE_Plus_dataset['train'][200]['context'], PARARULE_Plus.PARARULE_Plus_dataset['train'][200]['question'], templates.templates["no_extra_content"], "gpt-3.5-turbo")
 
-def Adjustment(demo, code, error_message, model):
+def Adjustment(demo, code, error_message, model = "gpt-3.5-turbo"):
 
     result_string = call_openai_API.ai_generation_adjustment(demo, code, error_message, model)
     return result_string
@@ -79,12 +79,12 @@ def write_record(filename, id, value, code, step, flag):
 with open(JSON_filename, 'r') as file:
     data = json.load(file)
 
-correct_num = 0
+correct_num = 10
 for i in range(0, 1):
     try:
         result_string = extract_string(Generation(templates.templates["agent_engineer"], data[i]['context'],
                         data[i]['question'],
-                        templates.templates["no_extra_content"], "gpt-3.5-turbo"))
+                        templates.templates["no_extra_content"]))
         print(result_string)
         with open(PY_filename, 'w') as file:
             file.write("{}".format(result_string))
@@ -93,7 +93,7 @@ for i in range(0, 1):
         flag = 0
         while(output.strip() != '1' and output.strip() != '0'):
             result_string = extract_string(Adjustment(templates.templates["adjustment_agent"],
-                                                            result_string, output, "gpt-3.5-turbo"))
+                                                            result_string, output))
             with open(PY_filename, 'w') as file:
                 file.write("{}".format(result_string))
             print("reprocessing...")

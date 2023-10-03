@@ -2,29 +2,35 @@ import traceback
 from pyDatalog import pyDatalog
 try:
     # Declare the pyDatalog variables
-    pyDatalog.create_terms('X, strong, big, thin, short, smart, rough, bad, huge, poor, quiet, wealthy, dull, nice, sad, kind')
+    pyDatalog.create_terms('X, strong, huge, big, short, little, quiet, wealthy, smart, dull, rough, sad, thin, bad, kind, nice, poor, small')
     
     # Define the facts
     +strong('Dave')
+    +huge('Dave')
     +big('Dave')
-    +thin('Charlie')
-    +short('Charlie')
-    +smart('Anne')
-    +rough('Alan')
-    +bad('Alan')
+    +short('Gary')
+    +little('Gary')
+    +quiet('Bob')
+    +wealthy('Bob')
+    +smart('Bob')
+    +dull('Harry')
+    +rough('Harry')
+    +sad('Harry')
     
     # Define the rules
-    rough(X) <= ~huge(X)
-    quiet(X) <= ~poor(X)
-    wealthy(X) <= smart(X)
-    nice(X) <= wealthy(X) & ~dull(X)
-    sad(X) <= rough(X) & ~huge(X)
-    dull(X) <= thin(X) & short(X)
-    bad(X) <= dull(X) & ~wealthy(X)
-    kind(X) <= quiet(X)
+    quiet(X) <= strong(X)
+    thin(X) <= short(X) & little(X)
+    bad(X) <= dull(X) & rough(X)
+    kind(X) <= quiet(X) & wealthy(X)
+    
+    # Define the constraints
+    small(X) <= thin(X)
+    wealthy(X) <= quiet(X)
+    nice(X) <= kind(X)
+    poor(X) <= bad(X)
     
     # Query the knowledge base
-    result = ~kind('Alan')
+    result = ~small('Gary')
     if result:
         print(1)
     else:
