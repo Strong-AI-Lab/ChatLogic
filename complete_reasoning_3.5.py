@@ -26,14 +26,6 @@ def extract_string(input_string):
 
     return None
 
-def check_pos_neg(string):
-    words = string.split()
-    for word in words:
-        if word.lower() == "true":
-            return "true"
-        elif word.lower() == "false":
-            return "false"
-    return None
 
 def Judgement(demo, question, model):
     result_string = call_openai_API.ai_generation_check(demo, question, model = "gpt-3.5-turbo")
@@ -80,7 +72,7 @@ with open(JSON_filename, 'r') as file:
 
 
 correct_num = 0
-for i in range(0, 40):
+for i in range(0, 1):
     try:
         # first time generate the code from propositions
         result_string = extract_string(Generation(templates.templates["agent_engineer"], data[i]['context'],
@@ -93,15 +85,17 @@ for i in range(0, 40):
 
         # Comparison
         # zero-shot CoT is here
-        tag = Comparison(templates.templates["check_error_part1"], f"Questions:{data[i]['context']}, Question:{data[i]['question']}", propositions_generated)
+        tag = Comparison(templates.templates["check_error_part1"], f"Propositions:{data[i]['context']}, Question:{data[i]['question']}", propositions_generated)
         tag_final = Extraction(templates.templates["check_error_part2"], tag)
-
+        print(f"tag: {tag}")
+        print(f"tag_final: {tag_final}")
         # if it pass the comparison
         if "1" in tag_final:
             flag = 0
             with open(PY_filename, 'w') as file:
                 file.write("{}".format(result_string))
             output = subprocess.check_output(['python', PY_filename], universal_newlines=True)
+            print(f"output: {output}")
             while (output.strip() != '1' and output.strip() != '0'):
                 result_string = extract_string(Adjustment(templates.templates["adjustment_agent"],
                                                             result_string, output))
@@ -115,9 +109,10 @@ for i in range(0, 40):
                 if (flag == 3):
                     break
         else:
+            print("enter the regeneration part")
             # regenaration
-            result_string = extract_string(Regeneration(templates.templates["regeneration"], f"Questions:{data[i]['context']}, Question:{data[i]['question']}", result_string, tag_final))
-
+            result_string = extract_string(Regeneration(templates.templates["regeneration"], f"Propositions:{data[i]['context']}, Question:{data[i]['question']}", result_string, tag_final))
+            print(f"regeneration result: {result_string}")
             with open(PY_filename, 'w') as file:
                 file.write("{}".format(result_string))
             output = subprocess.check_output(['python', PY_filename], universal_newlines=True)
@@ -144,4 +139,4 @@ for i in range(0, 40):
             continue
     except Exception as e:
         continue
-print(correct_num)
+print(f"correct_num: {correct_num}")
