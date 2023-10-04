@@ -46,6 +46,10 @@ def Generation(demo, context, question, requirements, model = "gpt-3.5-turbo"):
     result_string = call_openai_API.ai_function_generation(demo, context, question, requirements, model)
     return result_string
 
+def BackConvertion(demo, code, model = "gpt-3.5-turbo"):
+    result_string = call_openai_API.ai_function_backconvertion(demo, code, model)
+    return result_string
+
 # Communication(templates.templates["agent_engineer"], PARARULE_Plus.PARARULE_Plus_dataset['train'][200]['context'], PARARULE_Plus.PARARULE_Plus_dataset['train'][200]['question'], templates.templates["no_extra_content"], "gpt-3.5-turbo")
 
 def Adjustment(demo, code, error_message, model = "gpt-3.5-turbo"):
@@ -53,58 +57,87 @@ def Adjustment(demo, code, error_message, model = "gpt-3.5-turbo"):
     result_string = call_openai_API.ai_generation_adjustment(demo, code, error_message, model)
     return result_string
 
-def write_record(filename, id, value, code, step, flag):
-    with open(filename, 'r') as file:
-        reader = csv.reader(file)
-        rows = list(reader)
+def Extraction(demo, text, model = "gpt-3.5-turbo"):
+    result_string = call_openai_API.ai_function_extraction(demo, text, model)
+    return result_string
 
-    target_id = id
-    target_index = None
+def Comparison(demo, original, generated, model = "gpt-3.5-turbo"):
 
-    for i, row in enumerate(rows):
-        if row[0] == target_id:
-            target_index = i
-            break
+    result_string = call_openai_API.ai_function_comparison(demo,  original, generated, model)
+    return result_string
 
-    if target_index is not None:
-        rows[target_index].insert(step, value)
-        rows[target_index].insert(4, flag)
-        rows[target_index].insert(5, code)
 
-    with open(filename, 'w', newline='') as file:
-        writer = csv.writer(file)
-        writer.writerows(rows)
+def Regeneration(demo, code, text, model = "gpt-3.5-turbo"):
+    result_string = call_openai_API.ai_function_regeneration(demo, code, text, model)
+    return result_string
+
+
+
 
 
 with open(JSON_filename, 'r') as file:
     data = json.load(file)
 
-correct_num = 10
-for i in range(0, 1):
+
+correct_num = 0
+for i in range(0, 40):
     try:
+        # first time generate the code from propositions
         result_string = extract_string(Generation(templates.templates["agent_engineer"], data[i]['context'],
                         data[i]['question'],
                         templates.templates["no_extra_content"]))
-        print(result_string)
-        with open(PY_filename, 'w') as file:
-            file.write("{}".format(result_string))
-        print("processing...")
-        output = subprocess.check_output(['python', PY_filename], universal_newlines=True)
-        flag = 0
-        while(output.strip() != '1' and output.strip() != '0'):
-            result_string = extract_string(Adjustment(templates.templates["adjustment_agent"],
-                                                            result_string, output))
+        # print(result_string)
+
+        # convert code back 2 propositions
+        propositions_generated = BackConvertion(templates.templates["agent_engineer_neg"], result_string)
+
+        # Comparison
+        # zero-shot CoT is here
+        tag = Comparison(templates.templates["check_error_part1"], f"Questions:{data[i]['context']}, Question:{data[i]['question']}", propositions_generated)
+        tag_final = Extraction(templates.templates["check_error_part2"], tag)
+
+        # if it pass the comparison
+        if "1" in tag_final:
+            flag = 0
             with open(PY_filename, 'w') as file:
                 file.write("{}".format(result_string))
-            print("reprocessing...")
             output = subprocess.check_output(['python', PY_filename], universal_newlines=True)
-            print("New output:" + output)
-            print(type(output))
-            flag+=1
-            if(flag == 3):
-                break
+            while (output.strip() != '1' and output.strip() != '0'):
+                result_string = extract_string(Adjustment(templates.templates["adjustment_agent"],
+                                                            result_string, output))
+                with open(PY_filename, 'w') as file:
+                    file.write("{}".format(result_string))
+                print("reprocessing...")
+                output = subprocess.check_output(['python', PY_filename], universal_newlines=True)
+                print("New output:" + output)
+                print(type(output))
+                flag += 1
+                if (flag == 3):
+                    break
+        else:
+            # regenaration
+            result_string = extract_string(Regeneration(templates.templates["regeneration"], f"Questions:{data[i]['context']}, Question:{data[i]['question']}", result_string, tag_final))
+
+            with open(PY_filename, 'w') as file:
+                file.write("{}".format(result_string))
+            output = subprocess.check_output(['python', PY_filename], universal_newlines=True)
+            flag = 0
+            while (output.strip() != '1' and output.strip() != '0'):
+                result_string = extract_string(Adjustment(templates.templates["adjustment_agent"],
+                                                            result_string, output))
+                with open(PY_filename, 'w') as file:
+                    file.write("{}".format(result_string))
+                print("reprocessing...")
+                output = subprocess.check_output(['python', PY_filename], universal_newlines=True)
+                print("New output:" + output)
+                print(type(output))
+                flag += 1
+                if (flag == 3):
+                    break
+
+        # check correctness
         if (output.strip() != '1' and output.strip() != '0'):
-            continue
+            correct_num += 1
         if int(output.strip()) == data[i]['label']:
             correct_num += 1
         else:

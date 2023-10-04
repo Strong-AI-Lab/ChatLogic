@@ -6,7 +6,7 @@ python finetune.py \
     --output_dir './lora-alpaca' \
     --batch_size 128 \
     --micro_batch_size 4 \
-    --num_epochs 10 \
+    --num_epochs 5 \
     --learning_rate 1e-4 \
     --cutoff_len 512 \
     --val_set_size 2000 \

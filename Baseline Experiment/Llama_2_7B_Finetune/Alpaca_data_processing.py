@@ -25,12 +25,6 @@ def main():
     # load data
     dataset = load_dataset("qbao775/PARARULE-Plus")
 
-    # Define limits for each split
-    limits = {
-        "train": 10000,
-        "validation": 3000,
-        "test": 3000
-    }
 
     # Convert each data slice and save it separately
     for split, filename in zip(["train", "validation", "test"], ["train.json", "val.json", "test.json"]):
