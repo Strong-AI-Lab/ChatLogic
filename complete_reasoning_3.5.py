@@ -72,7 +72,7 @@ with open(JSON_filename, 'r') as file:
 
 
 correct_num = 0
-for i in range(0, 1):
+for i in range(0, 40):
     try:
         # first time generate the code from propositions
         result_string = extract_string(Generation(templates.templates["agent_engineer"], data[i]['context'],
@@ -90,7 +90,8 @@ for i in range(0, 1):
         print(f"tag: {tag}")
         print(f"tag_final: {tag_final}")
         # if it pass the comparison
-        if "1" in tag_final:
+        if "true" in tag_final:
+            print("no need to regenerate")
             flag = 0
             with open(PY_filename, 'w') as file:
                 file.write("{}".format(result_string))

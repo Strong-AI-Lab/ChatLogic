@@ -119,8 +119,9 @@ templates = {
                                 2. The number of propositions in the two texts must be consistent (including propositions and rules), otherwise it will be regarded as a difference.\n \
                                 3. If there is a difference, please tell me the difference.\n \
                                 Please think about this question step by step. """),
-    "check_error_part2": remove_spaces("""Based on your analysis process of text comparison, please give me a final conclusion. We only consider differences in content expression of texts and ignore differences in expression or structure. \
-                                            If there is no difference between the two texts, please return only the number 1 to me. If there is a difference, please return to me the content of the difference."""),
+    "check_error_part2": remove_spaces("""Based on your analysis process of text comparison, please give me a final conclusion. We only consider differences in content expression of texts and ignore differences in expression or structure. If there is no difference between the two texts, please return only the word "true" to me. If there is a difference, please return to me the content of the difference without anything else.
+                                        your expected output should be like: \n \
+                                        Bob is huge.(original) vs Bob is big.(generated):they are different."""),
     "regeneration": remove_spaces("""I interacted with you and completed the following actions:\n \
                                 1. I asked you to help me convert logical reasoning problems described in natural language into pydatalog code.\n \
                                 2. After the first step is completed, I asked you to convert the pydatalog code you generated back into a logical reasoning problem described in natural language (note that in this step, I did not provide you with the context of the first step's behavior)\n \

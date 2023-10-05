@@ -94,7 +94,7 @@ with open(JSON_filename, 'r') as file:
 #                 csv_writer.writerow([step, responses, label])
 
 correct_num = 0
-for i in range(0, 1):
+for i in range(0, 40):
     try:
 
         # first time generate the code from propositions
@@ -111,7 +111,8 @@ for i in range(0, 1):
         tag_final = batch_process(f"""{templates.templates['check_error_part2']}, the following is the analysis processing: {tag}""")
 
         # if it pass the comparison
-        if "1" in tag_final:
+        if "true" in tag_final:
+
             flag = 0
             with open(PY_filename, 'w') as file:
                 file.write("{}".format(result_string))
