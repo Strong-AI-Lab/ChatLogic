@@ -117,7 +117,7 @@ for i in range(0, 40):
             with open(PY_filename, 'w') as file:
                 file.write("{}".format(result_string))
             output = subprocess.check_output(['python', PY_filename], universal_newlines=True)
-            while (output.strip() != '1' and output.strip() != '0'):
+            while (output.strip() != "1" and output.strip() != "0"):
                 result_string = extract_string(batch_process(f"""{templates.templates['adjustment_agent']}, and here is the generated code: {result_string}, and the error message: {output}"""))
                 with open(PY_filename, 'w') as file:
                     file.write("{}".format(result_string))
@@ -137,7 +137,7 @@ for i in range(0, 40):
                 file.write("{}".format(result_string))
             output = subprocess.check_output(['python', PY_filename], universal_newlines=True)
             flag = 0
-            while (output.strip() != '1' and output.strip() != '0'):
+            while (output.strip() != "1" and output.strip() != "0"):
                 result_string = extract_string(batch_process(f"""{templates.templates['adjustment_agent']}, and here is the generated code: {result_string}, and the error message: {output}"""))
                 with open(PY_filename, 'w') as file:
                     file.write("{}".format(result_string))

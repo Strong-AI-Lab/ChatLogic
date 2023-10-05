@@ -110,7 +110,7 @@ for i in range(0, 5):
             file.write("{}".format(result_string))
         output = subprocess.check_output(['python', PY_filename], universal_newlines=True)
         print(f"output: {output}")
-        if (output.strip() != '1' and output.strip() != '0'):
+        if (output.strip() != "1" and output.strip() != "0"):
             continue
         else:
             accuracy += 1
@@ -148,7 +148,7 @@ for i in range(0, 50):
                 file.write("{}".format(result_string))
             output = subprocess.check_output(['python', PY_filename], universal_newlines=True)
             print(f"output: {output}")
-            while (output.strip() != '1' and output.strip() != '0'):
+            while (output.strip() != "1" and output.strip() != "0"):
                 result_string = extract_string(Adjustment(templates.templates["adjustment_agent"],
                                                             result_string, output))
                 with open(PY_filename, 'w') as file:
@@ -157,7 +157,7 @@ for i in range(0, 50):
                 output = subprocess.check_output(['python', PY_filename], universal_newlines=True)
                 print("New output:" + output)
                 print(type(output))
-                if flag == 0 and (output.strip() == '1' or output.strip() == '0'):
+                if flag == 0 and (output.strip() == "1" or output.strip() == "0"):
                     correct_num_flag0 += 1
                 flag += 1
                 if (flag == 3):
@@ -171,7 +171,7 @@ for i in range(0, 50):
                 file.write("{}".format(result_string))
             output = subprocess.check_output(['python', PY_filename], universal_newlines=True)
             flag = 0
-            while (output.strip() != '1' and output.strip() != '0'):
+            while (output.strip() != "1" and output.strip() != "0"):
                 result_string = extract_string(Adjustment(templates.templates["adjustment_agent"],
                                                             result_string, output))
                 with open(PY_filename, 'w') as file:
@@ -180,7 +180,7 @@ for i in range(0, 50):
                 output = subprocess.check_output(['python', PY_filename], universal_newlines=True)
                 print("New output:" + output)
                 print(type(output))
-                if flag == 0 and (output.strip() == '1' or output.strip() == '0'):
+                if flag == 0 and (output.strip() == "1" or output.strip() == "0"):
                     correct_num_flag0 += 1
                 flag += 1
                 if (flag == 3):

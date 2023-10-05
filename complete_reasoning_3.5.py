@@ -97,7 +97,7 @@ for i in range(0, 40):
                 file.write("{}".format(result_string))
             output = subprocess.check_output(['python', PY_filename], universal_newlines=True)
             print(f"output: {output}")
-            while (output.strip() != '1' and output.strip() != '0'):
+            while (output.strip() != "1" and output.strip() != "0"):
                 result_string = extract_string(Adjustment(templates.templates["adjustment_agent"],
                                                             result_string, output))
                 with open(PY_filename, 'w') as file:
@@ -118,7 +118,7 @@ for i in range(0, 40):
                 file.write("{}".format(result_string))
             output = subprocess.check_output(['python', PY_filename], universal_newlines=True)
             flag = 0
-            while (output.strip() != '1' and output.strip() != '0'):
+            while (output.strip() != "1" and output.strip() != "0"):
                 result_string = extract_string(Adjustment(templates.templates["adjustment_agent"],
                                                             result_string, output))
                 with open(PY_filename, 'w') as file:
