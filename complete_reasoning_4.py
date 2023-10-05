@@ -1,3 +1,4 @@
+## this the the part we want to check the effectiveness of semantic part retrieval
 import json
 import call_openai_API
 import templates
@@ -5,13 +6,35 @@ import openai
 import subprocess
 import csv
 import os
+import random
 
 # Initialize the OpenAI API client
 openai.api_key = api_key = os.getenv("OPENAI_API_KEY")
 #Define the file name
-JSON_filename = 'PARARULE_plus_step2_People_sample.json'
-PY_filename = 'pyDatalog_processing.py'
+# JSON_filename = 'PARARULE_plus_step2_People_sample.json'
+# replace the file with the following JSON_filenames
+# "PARARULE_plus_step2_Animal_sample.json",
+# "PARARULE_plus_step3_Animal_sample.json",
+# "PARARULE_plus_step4_Animal_sample.json",
+# "PARARULE_plus_step5_Animal_sample.json",
+# "PARARULE_plus_step2_People_sample.json",
+# "PARARULE_plus_step3_People_sample.json",
+# "PARARULE_plus_step4_People_sample.json",
+# "PARARULE_plus_step5_People_sample.json"
 
+file_names = [
+    "../PARARULE_plus_step2_Animal_sample.json",
+    "../PARARULE_plus_step3_Animal_sample.json",
+    "../PARARULE_plus_step4_Animal_sample.json",
+    "../PARARULE_plus_step5_Animal_sample.json",
+    "../PARARULE_plus_step2_People_sample.json",
+    "../PARARULE_plus_step3_People_sample.json",
+    "../PARARULE_plus_step4_People_sample.json",
+    "../PARARULE_plus_step5_People_sample.json"
+]
+
+
+PY_filename = 'pyDatalog_processing.py'
 
 def extract_string(input_string):
     left_boundary = 'import'
@@ -54,7 +77,6 @@ def Extraction(demo, text, model = "gpt-4"):
     return result_string
 
 def Comparison(demo, original, generated, model = "gpt-4"):
-
     result_string = call_openai_API.ai_function_comparison(demo,  original, generated, model)
     return result_string
 
@@ -63,16 +85,45 @@ def Regeneration(demo, code, text, model = "gpt-4"):
     result_string = call_openai_API.ai_function_regeneration(demo, code, text, model)
     return result_string
 
+# load the data
+data = []
+for file_name in file_names:
+    with open(file_name, 'r', encoding='utf-8') as json_file:
+        tmp = json.load(json_file)
+        data.extend(tmp)
+
+# select 50 records randomly
+data = random.sample(data, 500)
+print(data)
+# the basement without converting the propositions back to the code
+accuracy = 0
+for i in range(0, 5):
+    try:
+        # first time generate the code from propositions
+        result_string = extract_string(Generation(templates.templates["agent_engineer"], data[i]['context'],
+                        data[i]['question'],
+                        templates.templates["no_extra_content"]))
+        # print(result_string)
+
+        # save the code into the file
+        with open(PY_filename, 'w') as file:
+            file.write("{}".format(result_string))
+        output = subprocess.check_output(['python', PY_filename], universal_newlines=True)
+        print(f"output: {output}")
+        if (output.strip() != '1' and output.strip() != '0'):
+            continue
+        else:
+            accuracy += 1
+    except Exception as e:
+        continue
 
 
 
 
-with open(JSON_filename, 'r') as file:
-    data = json.load(file)
-
-
-correct_num = 0
-for i in range(0, 40):
+# test the accuracy if we add the back convertion part in to the framework
+correct_num_flag0 = 0
+correct_num_flag3 = 0
+for i in range(0, 50):
     try:
         # first time generate the code from propositions
         result_string = extract_string(Generation(templates.templates["agent_engineer"], data[i]['context'],
@@ -106,6 +157,8 @@ for i in range(0, 40):
                 output = subprocess.check_output(['python', PY_filename], universal_newlines=True)
                 print("New output:" + output)
                 print(type(output))
+                if flag == 0 and (output.strip() == '1' or output.strip() == '0'):
+                    correct_num_flag0 += 1
                 flag += 1
                 if (flag == 3):
                     break
@@ -127,17 +180,22 @@ for i in range(0, 40):
                 output = subprocess.check_output(['python', PY_filename], universal_newlines=True)
                 print("New output:" + output)
                 print(type(output))
+                if flag == 0 and (output.strip() == '1' or output.strip() == '0'):
+                    correct_num_flag0 += 1
                 flag += 1
                 if (flag == 3):
                     break
 
         # check correctness
-        if (output.strip() != '1' and output.strip() != '0'):
-            correct_num += 1
+        # if (output.strip() != '1' and output.strip() != '0'):
+        #     correct_num_flag0 += 1
         if int(output.strip()) == data[i]['label']:
-            correct_num += 1
+            correct_num_flag3 += 1
         else:
             continue
     except Exception as e:
         continue
-print(f"correct_num: {correct_num}")
+
+print(f"accuracy number: {accuracy}")
+print(f"correct_num_0: {correct_num_flag0}")
+print(f"correct_num_3: {correct_num_flag3}")

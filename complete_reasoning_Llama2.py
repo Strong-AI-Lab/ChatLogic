@@ -150,8 +150,8 @@ for i in range(0, 40):
                     break
 
         # check correctness
-        if (output.strip() != '1' and output.strip() != '0'):
-            correct_num += 1
+        # if (output.strip() != '1' and output.strip() != '0'):
+        #     correct_num += 1
         if int(output.strip()) == data[i]['label']:
             correct_num += 1
         else:

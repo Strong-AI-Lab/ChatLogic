@@ -78,7 +78,7 @@ for i in range(0, 40):
         result_string = extract_string(Generation(templates.templates["agent_engineer"], data[i]['context'],
                         data[i]['question'],
                         templates.templates["no_extra_content"]))
-        # print(result_string)
+        print(result_string)
 
         # convert code back 2 propositions
         propositions_generated = BackConvertion(templates.templates["agent_engineer_neg"], result_string)
@@ -132,8 +132,8 @@ for i in range(0, 40):
                     break
 
         # check correctness
-        if (output.strip() != '1' and output.strip() != '0'):
-            correct_num += 1
+        # if (output.strip() != '1' and output.strip() != '0'):
+        #     continue
         if int(output.strip()) == data[i]['label']:
             correct_num += 1
         else:
