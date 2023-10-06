@@ -4,24 +4,10 @@ import csv
 import re
 import os
 
-def remove_spaces(text):
-    # Replace multiple spaces with a single space
-    text = re.sub(r' +', ' ', text)
-    # Remove leading and trailing spaces from each line
-    text = re.sub(r'^ +| +$', '', text, flags=re.MULTILINE)
-    return text
-
-template = {
-    "ChatGPT_baseline": remove_spaces("""Based on the closed world assumption, please help me complete a multi-step logical reasoning task. Please help me answer whether the question is correct or not based on the facts and rules formed by these natural language propositions. 、
-                                            You should just return me one number as the final answer  (1 for true and 0 for wrong) and also provide reasoning process. The Propositions and Questions are as follows: \n""")
-}
-
-openai.api_key = api_key = os.getenv("OPENAI_API_KEY")
-
-
-def Baseline_ChatGPT_call(context, question, model = "gpt-3.5-turbo"):
+def ai_function_generation(demo, context, question, requirements, model = "gpt-3.5-turbo"):
     # parse args to comma separated string
-    messages = [
+    messages = [{"role": "system",
+                "content": demo},
                 {"role": "user",
                 "content": f"Propositions: ```{context}```\nQuestion: ```{question}```"}]
 
@@ -32,6 +18,25 @@ def Baseline_ChatGPT_call(context, question, model = "gpt-3.5-turbo"):
     )
 
     return response.choices[0].message["content"]
+
+
+def remove_spaces(text):
+    # Replace multiple spaces with a single space
+    text = re.sub(r' +', ' ', text)
+    # Remove leading and trailing spaces from each line
+    text = re.sub(r'^ +| +$', '', text, flags=re.MULTILINE)
+    return text
+
+template = {
+    "ChatGPT_baseline": remove_spaces("""Based on the closed world assumption, please help me complete a multi-step logical reasoning task. Please help me answer whether the question is correct or not based on the facts and rules formed by these natural language propositions. 
+                                            You should just return me one number as the final answer  (1 for true and 0 for wrong) and also provide reasoning process. The Propositions and Questions are as follows: \n""")
+}
+
+openai.api_key = api_key = os.getenv("OPENAI_API_KEY")
+
+
+def Baseline_ChatGPT_call(demo, context, question, model = "gpt-3.5-turbo"):
+    return ai_function_generation(demo, context, question, model)
 
 
 
@@ -61,7 +66,6 @@ with open("ChatGPT.csv", "w", newline="", encoding="utf-8") as csv_file:
                 question = entry["question"]
                 label = entry["label"]
                 # Replace this with your actual function call
-                response = Baseline_ChatGPT_call(context, question)
+                response = Baseline_ChatGPT_call(template['ChatGPT_baseline'], context, question)
 
                 csv_writer.writerow([step, response, label])
-

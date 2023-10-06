@@ -27,6 +27,12 @@ pipeline = transformers.pipeline(
     device_map="auto",
 )
 
+template = {
+    "zero-shot-CoT-part1": remove_spaces("""Based on the closed world assumption, please help me complete this multi-step logical reasoning task. Answer whether this question is correct based on the propositions about facts and rules formed by these natural language propositions. \
+                                            You should think through the question step by step, and show your full process. \n"""),
+    "zero-shot-CoT-part2": remove_spaces("""Based on this thought process, please help me sum up only a number as the final answer (1 represents correct, 0 represents wrong).""")
+}
+
 
 def batch_process(text):
     sequences = pipeline(
@@ -42,16 +48,17 @@ def batch_process(text):
 
 # List of json file names
 json_files = [
-    "../PARARULE_plus_step2_Animal_sample.json",
-    "../PARARULE_plus_step3_Animal_sample.json",
-    "../PARARULE_plus_step4_Animal_sample.json",
-    "../PARARULE_plus_step5_Animal_sample.json",
-    "../PARARULE_plus_step2_People_sample.json",
-    "../PARARULE_plus_step3_People_sample.json",
-    "../PARARULE_plus_step4_People_sample.json",
-    "../PARARULE_plus_step5_People_sample.json"
+    "PARARULE_plus_step2_Animal_sample.json"
 ]
 
+# "../PARARULE_plus_step3_Animal_sample.json",
+# "../PARARULE_plus_step4_Animal_sample.json",
+# "../PARARULE_plus_step5_Animal_sample.json",
+# "../PARARULE_plus_step2_People_sample.json",
+# "../PARARULE_plus_step3_People_sample.json",
+# "../PARARULE_plus_step4_People_sample.json",
+# # "../PARARULE_plus_step5_People_sample.json"
+#
 # Open the CSV file for writing
 with open("Llama2-7B.csv", "w", newline="", encoding="utf-8") as csv_file:
     csv_writer = csv.writer(csv_file)
@@ -66,6 +73,7 @@ with open("Llama2-7B.csv", "w", newline="", encoding="utf-8") as csv_file:
                 question = entry["question"]
                 label = entry["label"]
                 # Replace this with your actual function call
-                responses = batch_process(f"Instructions: ```{template['Llama2_baseline']}```Propositions: ```{context}```\nQuestion: ```{question}```")
+                responses1 = batch_process(f"Instructions: ```{template['zero-shot-CoT-part1']}```Propositions: ```{context}```\nQuestion: ```{question}```")
+                responses2 = batch_process(f"Instructions: ```{template['zero-shot-CoT-part2']}```Analysis process: ```{responses1}```")
 
-                csv_writer.writerow([step, responses, label])
+                csv_writer.writerow([step, responses2, label])
