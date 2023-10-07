@@ -53,7 +53,7 @@ pip install -r requirements.txt
 
 We use Stanford Alpaca paradigm to train the fine-tuned Llama2 model, you can see the specific operating specifications [here](https://github.com/tloen/alpaca-lora).
 
-The data set adjusted for Alpaca format is already visible on Huggingface [("ZhongshengWang/PARARULE-Plus-Alpaca")](ZhongshengWang/PARARULE-Plus-Alpaca).
+The data set adjusted for Alpaca format is already visible on Huggingface [("ZhongshengWang/PARARULE-Plus-Alpaca")](https://huggingface.co/datasets/ZhongshengWang/PARARULE-Plus-Alpaca).
 
 Using the NVIDIA RTX3090 graphics card, the effect after 5h LoRA fine-tuning on 10,000 pieces of data (randomly extracted) is significantly improved compared to the native model.
 
