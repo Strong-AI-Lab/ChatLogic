@@ -49,7 +49,7 @@ pip install -r requirements.txt
             - `Llama 2-7B.py`
 
 
-## Use LoRA to finetune Llama 2 7-B
+## Use LoRA to finetune Llama-2 7B
 
 We use Stanford Alpaca paradigm to train the fine-tuned Llama2 model, you can see the specific operating specifications [here](https://github.com/tloen/alpaca-lora).
 
@@ -82,3 +82,6 @@ python finetune.py \
     --train_on_inputs \
     --group_by_length
 ```
+## Quick Start
+
+Before you start the reasoning using ChatGPT/GPT-4 set the global param in the environment configuration **OPENAI_API_KEY="your_api_key"**
