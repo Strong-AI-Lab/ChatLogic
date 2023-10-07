@@ -1,4 +1,4 @@
-ssh https://github.com/tloen/alpaca-lora.git
+clone https://github.com/tloen/alpaca-lora.git
 # put the data "./Alpaca_PARARULE-Plus.json" into the directory same as the github repo
 python finetune.py \
     --base_model 'meta-llama/Llama-2-7b-hf' \
