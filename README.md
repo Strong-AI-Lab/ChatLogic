@@ -1,5 +1,8 @@
 # ChatLogic
 
+![ChatLogic Framework](ChatLogic.png)
+
+
 ChatLogic is a method that uses symbolic reasoning engines to augment the reasoning capabilities of large language models.
 
 Before you start implementing this project, please follow the basic design process below.
