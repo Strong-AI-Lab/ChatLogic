@@ -88,3 +88,11 @@ python finetune.py \
 ## Quick Start
 
 Before you start the reasoning using ChatGPT/GPT-4 set the global param in the environment configuration **OPENAI_API_KEY="your_api_key"**
+
+Here we only use **ChatGPT** as the benchmark large language model for demonstration.
+
+**demo_ChatLogic.py** is a code example specifically used to show the running process of ChatLogic. It contains a test data case extracted from PARARULE-Plus.
+
+```shell
+python demo_ChatLogic.py # this demo code contains a demo data for testing
+```
