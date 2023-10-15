@@ -96,3 +96,6 @@ Here we only use **ChatGPT** as the benchmark large language model for demonstra
 ```shell
 python demo_ChatLogic.py # this demo code contains a demo data for testing
 ```
+
+The following is a more detailed mind mapping of ChatLogic:
+![Detailed ChatLogic Framework](detail.png)
