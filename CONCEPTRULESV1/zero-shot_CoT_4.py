@@ -5,7 +5,7 @@ import re
 import os
 import random
 
-def ai_function_generation(demo, context, question, model="gpt-4-1106-preview"):
+def ai_function_generation(demo, context, question, model="gpt-4"):
     messages = [{"role": "system", "content": demo},
                 {"role": "user", "content": f"Propositions: ```{context}```\nQuestion: ```{question}```"}]
 
@@ -17,7 +17,7 @@ def ai_function_generation(demo, context, question, model="gpt-4-1106-preview"):
 
     return response.choices[0].message["content"]
 
-def ai_function_cot_part2(demo, context, model="gpt-4-1106-preview"):
+def ai_function_cot_part2(demo, context, model="gpt-4"):
     messages = [{"role": "system", "content": demo},
                 {"role": "user", "content": f"```{context}```"}]
 
@@ -45,13 +45,13 @@ template = {
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
-def ZeroShotCoT_call1(demo, context, question, model="gpt-4-1106-preview"):
+def ZeroShotCoT_call1(demo, context, question, model="gpt-4"):
     return ai_function_generation(demo, context, question, model)
 
-def ZeroShotCoT_call2(demo, context, model="gpt-4-1106-preview"):
+def ZeroShotCoT_call2(demo, context, model="gpt-4"):
     return ai_function_cot_part2(demo, context, model)
 
-jsonl_file = "ConceptRules/conceptrules_full_train.jsonl"
+jsonl_file = "conceptrules_full_train.jsonl"
 
 all_entries = []
 with open(jsonl_file, "r", encoding="utf-8") as file:
@@ -73,4 +73,6 @@ with open("V1-zeroshot-cot-4.csv", "w", newline="", encoding="utf-8") as csv_fil
         response_part_1 = ZeroShotCoT_call1(template['zero-shot-CoT-part1'], context, question_text)
         print(response_part_1)
         response_part_2 = ZeroShotCoT_call2(template['zero-shot-CoT-part2'], response_part_1)
+        print("Writing to CSV:", [first_question["id"], response_part_2, label])
+
         csv_writer.writerow([first_question["id"], response_part_2, label])

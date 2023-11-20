@@ -5,7 +5,7 @@ import re
 import os
 import random
 
-def ai_function_generation(demo, context, question, model="gpt-4-1106-preview"):
+def ai_function_generation(demo, context, question, model="gpt-4"):
     messages = [{"role": "system", "content": demo},
                 {"role": "user", "content": f"Propositions: ```{context}```\nQuestion: ```{question}```"}]
 
@@ -32,7 +32,7 @@ template = {
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
-def Baseline_ChatGPT_call(demo, context, question, model="gpt-4-1106-preview"):
+def Baseline_ChatGPT_call(demo, context, question, model="gpt-4"):
     return ai_function_generation(demo, context, question, model)
 
 # Read the JSON Lines file
