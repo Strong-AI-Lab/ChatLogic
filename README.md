@@ -99,3 +99,6 @@ python demo_ChatLogic.py # this demo code contains a demo data for testing
 
 The following is a more detailed mind mapping of ChatLogic:
 ![Detailed ChatLogic Framework](detail.png)
+
+The picture below is a specific comparison. We use the performance of native ChatGPT(left) and ChatGPT enhanced by the ChatLogic framework(right) to compare.
+![Detailed ChatLogic Framework](demo.png)
