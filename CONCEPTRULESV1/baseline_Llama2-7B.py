@@ -60,8 +60,8 @@ with open("Llama2-7B.csv", "w", newline="", encoding="utf-8") as csv_file:
 
     for entry in selected_entries:
         context = entry["context"]
-        for question in entry["questions"]:
-            question_text = question["text"]
-            label = question["label"]
-            responses = batch_process(f"Instructions: ```{template['ConceptRules_baseline']}```Propositions: ```{context}```\nQuestion: ```{question_text}```")
-            csv_writer.writerow([question["id"], responses, label])
+        first_question = entry["questions"][0]  # Process only the first question
+        question_text = first_question["text"]
+        label = first_question["label"]
+        responses = batch_process(f"Instructions: ```{template['ConceptRules_baseline']}```Propositions: ```{context}```\nQuestion: ```{question_text}```")
+        csv_writer.writerow([first_question["id"], responses, label])

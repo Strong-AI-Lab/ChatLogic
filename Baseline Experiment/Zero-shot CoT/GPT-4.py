@@ -4,7 +4,7 @@ import csv
 import re
 import os
 
-def ai_function_generation(demo, context, question, model = "gpt-3.5-turbo"):
+def ai_function_generation(demo, context, question, model = "gpt-4"):
     # parse args to comma separated string
     messages = [{"role": "system",
                 "content": demo},
@@ -19,7 +19,7 @@ def ai_function_generation(demo, context, question, model = "gpt-3.5-turbo"):
 
     return response.choices[0].message["content"]
 
-def ai_function_cot_part2(demo, context, model = "gpt-3.5-turbo"):
+def ai_function_cot_part2(demo, context, model = "gpt-4"):
     # parse args to comma separated string
     messages = [{"role": "system",
                 "content": demo},
