@@ -7,13 +7,13 @@ import csv
 import call_openai_API
 import templates
 
-# 假设其他函数（如Generation, BackConvertion等）保持不变
-# 初始化OpenAI API客户端
+# Assume other functions (such as Generation, BackConversion, etc.) remain unchanged
+# Initialize OpenAI API client
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
-# 定义JSON Lines文件名
-# 这个位置会根据不同的数据集统计进行更换
-jsonl_file = "ConceptRules/conceptrules_full_train.jsonl"
+# Define JSON Lines file name
+# This position will be changed according to different data set statistics
+jsonl_file = "conceptrules_full_train.jsonl"
 
 # 从JSON Lines文件中加载数据
 data = []
@@ -21,12 +21,12 @@ with open(jsonl_file, "r", encoding="utf-8") as file:
     for line in file:
         data.append(json.loads(line))
 
-# 随机选择100条记录
+# select 100 records randomly
 data = random.sample(data, 100)
 
 PY_filename = 'pyDatalog_processing.py'
 
-# 原始代码中的函数定义
+# Function definition in original code
 
 def extract_string(input_string):
     left_boundary = 'import'
@@ -123,6 +123,9 @@ for entry in data:
         else:
             print("enter the regeneration part")
             # regenaration
+            print(Regeneration(templates.templates["regeneration"],
+                                                        f"Propositions:{context}, Question:{question_text}",
+                                                        result_string, tag_final))
             result_string = extract_string(Regeneration(templates.templates["regeneration"],
                                                         f"Propositions:{context}, Question:{question_text}",
                                                         result_string, tag_final))

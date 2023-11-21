@@ -75,12 +75,12 @@ def ai_function_comparison(demo, original, generated, model = "gpt-3.5-turbo"):
 
     return response.choices[0].message["content"]
 
-def ai_function_regeneration(demo, code, text, model = "gpt-3.5-turbo"):
+def ai_function_regeneration(demo, context, code, text, model = "gpt-3.5-turbo"):
     # parse args to comma separated string
     messages = [{"role": "system",
                 "content": demo},
                 {"role": "user",
-                "content": f"Original Code: ```{code}```, Problem information: ```{text}```"}]
+                "content": f"Original propositions and questions: ```{context}```, Original Code: ```{code}```, Problem information: ```{text}```"}]
 
     response = openai.ChatCompletion.create(
         model = model,

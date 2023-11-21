@@ -1,29 +1,34 @@
+import traceback
 from pyDatalog import pyDatalog
+try:
+    # Declare the pyDatalog variables
+    pyDatalog.create_terms('X, Alan, strong, high, Fiona, little, small, Bob, wealthy, Harry, sad, rough, smart, bad, nice, dull, quiet, poor, kind, big')
 
-pyDatalog.create_terms('X, Y, Z, Located_in, Water, Table, Dinner, Beer, Inmate, House, Car_show, Stuttgart, Western_hemisphere, Rubber_stamp, Health_center, Mouse_in_wall, result, Is_connected')
+    # Define the facts
+    +strong('Alan')
+    +high('Alan')
+    +little('Fiona')
+    +small('Fiona')
+    +wealthy('Bob')
+    +sad('Harry')
+    +rough('Harry')
 
-# 定义事实
-+Located_in('Dinner', 'Table')
-+Located_in('Water', 'Beer')
-+Located_in('Inmate', 'House')
-+Located_in('Rubber_stamp', 'Health_center')
-+Located_in('Table', 'House')
-+Located_in('Beer', 'Dinner')
-+Located_in('Mouse_in_wall', 'House')
--Located_in('Water', 'Car_show')
--Located_in('Water', 'Stuttgart')
--Located_in('Water', 'Western_hemisphere')
--Located_in('Inmate', 'Health_center')
+    # Define the rules
+    sad(X) <= ~big(X)
+    smart(X) <= ~bad(X)
+    nice(X) <= wealthy(X)
+    quiet(X) <= nice(X) & ~dull(X)
+    poor(X) <= sad(X) & ~big(X)
+    dull(X) <= little(X) & small(X)
+    rough(X) <= dull(X) & ~nice(X)
+    kind(X) <= smart(X)
 
-# 定义推理规则
-# 基础规则: 如果X直接位于Y中，则它们是连接的
-Is_connected(X,Y) <= Located_in(X,Y)
-
-# 递归规则: 如果X位于Y，并且Y与Z连接，则X与Z也连接
-Is_connected(X,Z) <= Located_in(X,Y) & Is_connected(Y,Z)
-
-# 查询水是否与桌子连接
-query_result = Is_connected('Water', 'Table')
-
-# 根据查询结果输出
-print(1 if query_result.data else 0)
+    # Query the knowledge base
+    result = kind['Harry'] # Change kind('Harry') to kind['Harry']
+    if result:
+        print(1)
+    else:
+        print(0)
+except Exception as e:
+    traceback_info = traceback.format_exc()
+    print(traceback_info)
