@@ -94,7 +94,7 @@ with open(JSON_filename, 'r') as file:
 #                 csv_writer.writerow([step, responses, label])
 
 correct_num = 0
-for i in range(0, 40):
+for i in range(0, 50):
     try:
 
         # first time generate the code from propositions
