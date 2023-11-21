@@ -57,19 +57,27 @@ def batch_process(text):
     return sequences[0]['generated_text']
 
 
-jsonl_file = "conceptrules_full_train.jsonl"
+# Define JSON Lines file name
+# This position will be changed according to different data set statistics
+jsonl_file = "ConceptRulesV2/conceptrules_v2_full_train.jsonl"
 
 # 从JSON Lines文件中加载数据
 data = []
 with open(jsonl_file, "r", encoding="utf-8") as file:
     for line in file:
-        data.append(json.loads(line))
+        entry = json.loads(line)
+        first_question_data = entry['questions'][0]  # 提取第一个问题
+        entry['questions'] = [first_question_data]  # 更新entry只包含第一个问题
+        data.append(entry)
+
 
 # select 100 records randomly
 data = random.sample(data, 100)
 
 
 PY_filename = 'pyDatalog_processing.py'
+
+
 # # Open the CSV file for writing
 # with open("Llama2-7B-ChatLogic.csv", "w", newline="", encoding="utf-8") as csv_file:
 #     csv_writer = csv.writer(csv_file)
@@ -88,39 +96,11 @@ PY_filename = 'pyDatalog_processing.py'
 #
 #                 csv_writer.writerow([step, responses, label])
 
-# the basement without converting the propositions back to the code
-
-
+# count variables
 accuracy = 0
-for entry in data:
-    context = entry['context']
-    question_data = entry['questions'][0]
-    question_text = question_data['text']
-    label = question_data['label']
-    try:
-        # first time generate the code from propositions
-        result_string = extract_string(batch_process(
-            f"""{templates.templates['agent_engineer']}, Here are the propositions: {context} and the Question:{question_text},
-                                        {templates.templates['no_extra_content']}"""))
-        print(result_string)
-
-        # save the code into the file
-        with open(PY_filename, 'w') as file:
-            file.write("{}".format(result_string))
-        output = subprocess.check_output(['python', PY_filename], universal_newlines=True)
-        print(f"output: {output}")
-        if (output.strip() != '1' and output.strip() != '0'):
-            continue
-        else:
-            accuracy += 1
-    except Exception as e:
-        continue
-
-
-
-# test the accuracy if we add the back convertion part in to the framework
 correct_num_flag0 = 0
 correct_num_flag3 = 0
+
 for entry in data:
     context = entry['context']
     question_data = entry['questions'][0]
@@ -130,8 +110,8 @@ for entry in data:
         # first time generate the code from propositions
         result_string = extract_string(batch_process(
             f"""{templates.templates['agent_engineer']}, Here are the propositions: {context} and the Question:{question_text},
-                                        {templates.templates['no_extra_content']}"""))
-        # print(result_string)
+                                {templates.templates['no_extra_content']}"""))
+        print(result_string)
 
         # convert code back 2 propositions
         propositions_generated = batch_process(
@@ -139,14 +119,16 @@ for entry in data:
 
         # Comparison
         # zero-shot CoT is here
+        # Comparison
+        # zero-shot CoT is here
         tag = batch_process(
             f"""{templates.templates['check_error_part1']}, and the original Propositions:{context}, and Question:{question_text}, the generated Propositions and Questions: {propositions_generated}""")
         tag_final = batch_process(
             f"""{templates.templates['check_error_part2']}, the following is the analysis processing: {tag}""")
 
-        # print(f"tag: {tag}")
-        # print(f"tag_final: {tag_final}")
-
+        # if it pass the comparison
+        print(f"tag: {tag}")
+        print(f"tag_final: {tag_final}")
         # if it pass the comparison
         if "true" in tag_final:
             print("no need to regenerate")
@@ -171,7 +153,7 @@ for entry in data:
         else:
             print("enter the regeneration part")
             # regenaration
-            result_string = extract_string(batch_process(f"""{templates.templates['regeneration']},The original propositions are:{data[i]['context']}, and Question:{data[i]['question']}, and the following is the generated code: {result_string}, and the differences: {tag_final}"""))
+            result_string = extract_string(batch_process(f"""{templates.templates['regeneration']},The original propositions are:{context}, and Question:{question_text}, and the following is the generated code: {result_string}, and the differences: {tag_final}"""))
             print(f"regeneration result: {result_string}")
             with open(PY_filename, 'w') as file:
                 file.write("{}".format(result_string))
@@ -199,10 +181,9 @@ for entry in data:
         else:
             continue
     except Exception as e:
+        print(f"Extract error: {e}")
         continue
 
 print(f"accuracy number: {accuracy}")
 print(f"correct_num_0: {correct_num_flag0}")
 print(f"correct_num_3: {correct_num_flag3}")
-
-

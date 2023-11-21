@@ -50,7 +50,7 @@ def Generation(demo, context, question, requirements, model="gpt-3.5-turbo"):
     result_string = call_openai_API.ai_function_generation(demo, context, question, requirements, model)
     return result_string
 
-def BackConvertion(demo, code, model="gpt-4"):
+def BackConvertion(demo, code, model="gpt-3.5-turbo"):
     result_string = call_openai_API.ai_function_backconvertion(demo, code, model)
     return result_string
 

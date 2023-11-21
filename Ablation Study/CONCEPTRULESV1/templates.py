@@ -18,39 +18,47 @@ templates = {
                             6. Dynamically update the variables in ```pyDatalog.create_terms```, add variables that are not mentioned, and delete variables that are not used.\n \
                             The Propositions and Questions are as follows: \n \
                             ```Propositions：\n \
-                                Dinner is located in table. \n \
-                                Water is located in beer. \n \
-                                Inmate is located in house. \n \
-                                Water is not located in car show. \n \
-                                Water is not located in stuttgart. \n \
-                                Water is not located in western hemisphere. \n \
-                                Rubber stamp is located in health center. \n \
-                                Table is located in house. \n \
-                                Beer is located in dinner. \n \
-                                Mouse in wall is located in house. \n \
-                                Inmate is not located in health center. \n \
-                                Water is not located in car show```\n \
-                            ```Questions: Water is located in table.```,\n \
+                                Alan is big.\n \
+                                Fiona is kind. \n \
+                                Fiona is nice. \n \
+                                Fiona is quiet. \n \
+                                Big people are kind. \n \
+                                If someone is kind and nice then they are smart. \n \
+                                All sad people are bad. \n \
+                                If someone is quiet then they are high. \n \
+                                All high people are heavy. \n \
+                                If someone is smart then they are round. \n \
+                                If someone is round then they are wealthy. \n \
+                                If someone is wealthy then they are strong. \n \
+                                All strong people are huge.```\n \
+                            ```Questions: Fiona is huge.```,\n \
                             Your expected output is following, only containing code:\n \
-                                import traceback\n \
-                                from pyDatalog import pyDatalog\n \
-                                try:\n \
-                                    pyDatalog.create_terms('X, Y, Z, Located_in, Water, Table, Dinner, Beer, Inmate, House, Car_show, Stuttgart, Western_hemisphere, Rubber_stamp, Health_center, Mouse_in_wall, result, Is_connected')\n \
-                                    +Located_in('Dinner', 'Table')\n \
-                                    +Located_in('Water', 'Beer')\n \
-                                    +Located_in('Inmate', 'House')\n \
-                                    +Located_in('Rubber_stamp', 'Health_center')\n \
-                                    +Located_in('Table', 'House')\n \
-                                    +Located_in('Beer', 'Dinner')\n \
-                                    +Located_in('Mouse_in_wall', 'House')\n \
-                                    -Located_in('Water', 'Car_show')\n \
-                                    -Located_in('Water', 'Stuttgart')\n \
-                                    -Located_in('Water', 'Western_hemisphere')\n \
-                                    -Located_in('Inmate', 'Health_center')\n \
-                                    Is_connected(X,Y) <= Located_in(X,Y)\n \
-                                    Is_connected(X,Z) <= Located_in(X,Y) & Is_connected(Y,Z)\n \
-                                    query_result = Is_connected('Water', 'Table')\n \
-                                    print(1 if query_result.data else 0)\n \
+                            import traceback
+                            from pyDatalog import pyDatalog\n \
+                                try:     
+                                    # Declare the pyDatalog variables\n \
+                                    pyDatalog.create_terms('X, big, kind, nice, quiet, smart, sad, bad, high, heavy, is_round, wealthy, strong, huge')\n \
+                                    # Define the facts\n \
+                                    +big('Alan')\n \
+                                    +kind('Fiona')\n \
+                                    +nice('Fiona')\n \
+                                    +quiet('Fiona')\n \
+                                    # Define the rules\n \
+                                    kind(X) <= big(X)\n \
+                                    smart(X) <= kind(X) & nice(X)\n \
+                                    bad(X) <= sad(X)\n \
+                                    high(X) <= quiet(X)\n \
+                                    heavy(X) <= high(X)\n \
+                                    is_round(X) <= smart(X)\n \
+                                    wealthy(X) <= is_round(X)\n \
+                                    strong(X) <= wealthy(X)\n \
+                                    huge(X) <= strong(X)\n \
+                                    # Query the knowledge base\n \
+                                    result = huge('Fiona')\n \
+                                    if result:\n \
+                                        print(1)\n \
+                                    else:\n \
+                                        print(0)
                                 except Exception as e:\n \
                                     traceback_info = traceback.format_exc()\n \
                                     print(traceback_info)"""),
@@ -66,40 +74,41 @@ templates = {
                                 import traceback\n \
                                 from pyDatalog import pyDatalog\n \
                                 try:\n \
-                                    pyDatalog.create_terms('X, Y, Z, Located_in, Water, Table, Dinner, Beer, Inmate, House, Car_show, Stuttgart, Western_hemisphere, Rubber_stamp, Health_center, Mouse_in_wall, result, Is_connected')\n \
-                                    +Located_in('Dinner', 'Table')\n \
-                                    +Located_in('Water', 'Beer')\n \
-                                    +Located_in('Inmate', 'House')\n \
-                                    +Located_in('Rubber_stamp', 'Health_center')\n \
-                                    +Located_in('Table', 'House')\n \
-                                    +Located_in('Beer', 'Dinner')\n \
-                                    +Located_in('Mouse_in_wall', 'House')\n \
-                                    -Located_in('Water', 'Car_show')\n \
-                                    -Located_in('Water', 'Stuttgart')\n \
-                                    -Located_in('Water', 'Western_hemisphere')\n \
-                                    -Located_in('Inmate', 'Health_center')\n \
-                                    Is_connected(X,Y) <= Located_in(X,Y)\n \
-                                    Is_connected(X,Z) <= Located_in(X,Y) & Is_connected(Y,Z)\n \
-                                    query_result = Is_connected('Water', 'Table')\n \
-                                    print(1 if query_result.data else 0)\n \
+                                    # Declare the pyDatalog variables\n \
+                                    pyDatalog.create_terms('X, big, kind, nice, quiet, smart, sad, bad, high, heavy, is_round, wealthy, strong, huge')\n \
+                                    # Define the facts\n \
+                                    +big('Alan')\n \
+                                    +kind('Fiona')\n \
+                                    +nice('Fiona')\n \
+                                    +quiet('Fiona')\n \
+                                    # Define the rules\n \
+                                    kind(X) <= big(X)\n \
+                                    smart(X) <= kind(X) & nice(X)\n \
+                                    bad(X) <= sad(X)\n \
+                                    high(X) <= quiet(X)\n \
+                                    heavy(X) <= high(X)\n \
+                                    is_round(X) <= smart(X)\n \
+                                    wealthy(X) <= is_round(X)\n \
+                                    strong(X) <= wealthy(X)\n \
+                                    huge(X) <= strong(X)\n \
+                                    # Question\n \
+                                    question = +huge('Fiona')\n \
                                 except Exception as e:\n \
                                     traceback_info = traceback.format_exc()\n \
                                     print(traceback_info)\n \
                                 Your expected output is following, i.e. the Propositions and Questions: \n \
-                                ```Propositions：\n \
-                                    Dinner is located in table. \n \
-                                    Water is located in beer. \n \
-                                    Inmate is located in house. \n \
-                                    Water is not located in car show. \n \
-                                    Water is not located in stuttgart. \n \
-                                    Water is not located in western hemisphere. \n \
-                                    Rubber stamp is located in health center. \n \
-                                    Table is located in house. \n \
-                                    Beer is located in dinner. \n \
-                                    Mouse in wall is located in house. \n \
-                                    Inmate is not located in health center. \n \
-                                    Water is not located in car show```\n \
-                                ```Questions: Water is located in table.```\n \
+                                ```Propositions:\n \
+                                Alan is big.\n \
+                                Fiona is kind.\n \
+                                Fiona is nice.\n \
+                                Fiona is quiet.\n \
+                                Big people are kind.\n \
+                                If someone is kind and nice then they are smart. All sad people are bad.\n \
+                                If someone is quiet then they are high.\n \
+                                All high people are heavy.\n \
+                                If someone is smart then they are round.\n \
+                                If someone is round then they are wealthy. If someone is wealthy then they are strong. All strong people are huge.```\n \
+                                ```Questions: Fiona is huge.```\n \
     """),
     "no_extra_content": remove_spaces("Your output code will be saved directly into the py file and executed, so anything other than code is prohibited."),
     "adjustment_agent": remove_spaces("""You are an engineer proficient in pyDatalog programming. Please help me fix the code according to the error message provided, and meet the following requirements:\n \
@@ -110,7 +119,7 @@ templates = {
                                 2. The number of propositions in the two texts must be consistent (including propositions and rules), otherwise it will be regarded as a difference.\n \
                                 3. If there is a difference, please tell me the difference.\n \
                                 Please think about this question step by step. """),
-    "check_error_part2": remove_spaces("""Based on your analysis process of text comparison, please give me a final conclusion. We only consider differences in content expression of texts and ignore differences in expression or structure. If there are differences, I hope you will provide me with the specific difference information when summarizing, so that it can help improve the code.
+    "check_error_part2": remove_spaces("""Based on your analysis process of text comparison, please give me a final conclusion. We only consider differences in content expression of texts and ignore differences in expression or structure. If there is no difference between the two texts, please return only the word "true" to me. If there is a difference, please return to me the content of the difference without anything else.
                                         your expected output should be like: \n \
                                         Bob is huge.(original) vs Bob is big.(generated):they are different."""),
     "regeneration": remove_spaces("""I interacted with you and completed the following actions:\n \

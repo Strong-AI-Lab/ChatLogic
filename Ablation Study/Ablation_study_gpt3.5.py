@@ -82,7 +82,7 @@ def Comparison(demo, original, generated, model = "gpt-3.5-turbo"):
     return result_string
 
 
-def Regeneration(demo, code, text, model = "gpt-3.5-turbo"):
+def Regeneration(demo, context, code, text, model = "gpt-3.5-turbo"):
     result_string = call_openai_API.ai_function_regeneration(demo, code, text, model)
     return result_string
 
