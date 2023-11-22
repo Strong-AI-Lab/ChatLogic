@@ -1,4 +1,4 @@
-## this the the part we want to check the effectiveness of semantic part retrieval
+## this the part we want to check the effectiveness of semantic part retrieval
 import json
 import call_openai_API
 import templates
@@ -22,16 +22,18 @@ openai.api_key = api_key = os.getenv("OPENAI_API_KEY")
 # "PARARULE_plus_step4_People_sample.json",
 # "PARARULE_plus_step5_People_sample.json"
 
-file_names = [
-    "../PARARULE_plus_step2_Animal_sample.json",
-    "../PARARULE_plus_step3_Animal_sample.json",
-    "../PARARULE_plus_step4_Animal_sample.json",
-    "../PARARULE_plus_step5_Animal_sample.json",
-    "../PARARULE_plus_step2_People_sample.json",
-    "../PARARULE_plus_step3_People_sample.json",
-    "../PARARULE_plus_step4_People_sample.json",
-    "../PARARULE_plus_step5_People_sample.json"
-]
+# Define JSON Lines file name
+# This position will be changed according to different data set statistics
+jsonl_file = "conceptrules_V2_full_train.jsonl"
+
+# 从JSON Lines文件中加载数据
+data = []
+with open(jsonl_file, "r", encoding="utf-8") as file:
+    for line in file:
+        data.append(json.loads(line))
+
+# select 100 records randomly
+data = random.sample(data, 100)
 
 
 PY_filename = 'pyDatalog_processing.py'
@@ -83,29 +85,23 @@ def Comparison(demo, original, generated, model = "gpt-3.5-turbo"):
 
 
 def Regeneration(demo, context, code, text, model = "gpt-3.5-turbo"):
-    result_string = call_openai_API.ai_function_regeneration(demo, code, text, model)
+    result_string = call_openai_API.ai_function_regeneration(demo, context, code, text, model)
     return result_string
 
-# load the data
-data = []
-for file_name in file_names:
-    with open(file_name, 'r', encoding='utf-8') as json_file:
-        tmp = json.load(json_file)
-        data.extend(tmp)
-
-# select 50 records randomly
-data = random.sample(data, 50)
-# print(data)
 
 # the basement without converting the propositions back to the code
 accuracy = 0
-for i in range(0, 50):
+for entry in data:
+    context = entry['context']
+    question_data = entry['questions'][0]
+    question_text = question_data['text']
+    label = question_data['label']
     try:
         # first time generate the code from propositions
-        result_string = extract_string(Generation(templates.templates["agent_engineer"], data[i]['context'],
-                        data[i]['question'],
+        result_string = extract_string(Generation(templates.templates["agent_engineer"], context,
+                        question_text,
                         templates.templates["no_extra_content"]))
-        # print(result_string)
+        print(result_string)
 
         # save the code into the file
         with open(PY_filename, 'w') as file:
@@ -122,23 +118,28 @@ for i in range(0, 50):
 
 
 
+
 # test the accuracy if we add the back convertion part in to the framework
 correct_num_flag0 = 0
 correct_num_flag3 = 0
-for i in range(0, 50):
+for entry in data:
+    context = entry['context']
+    question_data = entry['questions'][0]
+    question_text = question_data['text']
+    label = question_data['label']
     try:
         # first time generate the code from propositions
-        result_string = extract_string(Generation(templates.templates["agent_engineer"], data[i]['context'],
-                        data[i]['question'],
+        result_string = extract_string(Generation(templates.templates["agent_engineer"], context,
+                        question_text,
                         templates.templates["no_extra_content"]))
-        # print(result_string)
+        print(result_string)
 
         # convert code back 2 propositions
         propositions_generated = BackConvertion(templates.templates["agent_engineer_neg"], result_string)
 
         # Comparison
         # zero-shot CoT is here
-        tag = Comparison(templates.templates["check_error_part1"], f"Propositions:{data[i]['context']}, Question:{data[i]['question']}", propositions_generated)
+        tag = Comparison(templates.templates["check_error_part1"], f"Propositions:{context}, Question:{question_text}", propositions_generated)
         tag_final = Extraction(templates.templates["check_error_part2"], tag)
         print(f"tag: {tag}")
         print(f"tag_final: {tag_final}")
@@ -167,7 +168,7 @@ for i in range(0, 50):
         else:
             print("enter the regeneration part")
             # regenaration
-            result_string = extract_string(Regeneration(templates.templates["regeneration"], f"Propositions:{data[i]['context']}, Question:{data[i]['question']}", result_string, tag_final))
+            result_string = extract_string(Regeneration(templates.templates["regeneration"], f"Propositions:{context}, Question:{question_text}", result_string, tag_final))
             print(f"regeneration result: {result_string}")
             with open(PY_filename, 'w') as file:
                 file.write("{}".format(result_string))
@@ -191,13 +192,13 @@ for i in range(0, 50):
         # check correctness
         # if (output.strip() != '1' and output.strip() != '0'):
         #     correct_num_flag0 += 1
-        if int(output.strip()) == data[i]['label']:
+        if int(output.strip()) == label:
             correct_num_flag3 += 1
         else:
             continue
     except Exception as e:
         continue
 
-print(f"accuracy number: {accuracy}")
+# print(f"accuracy number: {accuracy}")
 print(f"correct_num_0: {correct_num_flag0}")
 print(f"correct_num_3: {correct_num_flag3}")
