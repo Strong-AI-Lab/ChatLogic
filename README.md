@@ -54,7 +54,7 @@ pip install -r requirements.txt
 
 ## Use LoRA to finetune Llama-2 7B
 
-～～We have omitted this experimental process in the main text of the paper. It is saved here just to illustrate that this introductory tutorial still has certain practical significance, but it will not be used as a comparative experiment.～～
+~~We have omitted this experimental process in the main text of the paper. It is saved here just to illustrate that this introductory tutorial still has certain practical significance, but it will not be used as a comparative experiment.~~
 
 
 We use Stanford Alpaca paradigm to train the fine-tuned Llama2 model, you can see the specific operating specifications [here](https://github.com/tloen/alpaca-lora).
